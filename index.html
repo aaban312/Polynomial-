@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123b44">
+  <meta name="description" content="رسم و بررسی تعاملی چندجمله‌ای‌های درجهٔ ۱ تا ۵، همراه با کنترل ضرایب، چند نمودار هم‌زمان و کارکرد آفلاین.">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="کارگاه نمودار">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+  <title>کارگاه نمودار | آزمایشگاه چندجمله‌ای‌ها</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24H28M9 28V4" stroke="currentColor" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/><path d="M4 23C9 23 10.5 7 16.7 11.5C20.5 14.3 21 24.5 28 5" stroke="currentColor" stroke-width="2.9" stroke-linecap="round"/></svg></div>
+        <div>
+          <h1>کارگاه نمودار</h1>
+          <div class="brand-subtitle">آزمایشگاه تعاملی چندجمله‌ای‌ها</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="offline-pill" id="connectionStatus" aria-live="polite"><span class="status-dot"></span><span id="connectionText">آمادهٔ استفاده</span></span>
+        <button class="btn btn-header" type="button" id="installButton" hidden><span aria-hidden="true">⇩</span> نصب برنامه</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar" aria-label="مدیریت توابع">
+        <section class="panel input-panel" aria-labelledby="inputTitle">
+          <div class="section-eyebrow">ساخت نمودار جدید</div>
+          <h2 id="inputTitle">تابعت را وارد کن <span class="muted-text">(درجهٔ ۱ تا ۵)</span></h2>
+          <form id="equationForm" novalidate>
+            <label class="field-label" for="equationInput">عبارت چندجمله‌ای</label>
+            <div class="equation-input-row">
+              <span class="function-prefix" aria-hidden="true">y =</span>
+              <input type="text" id="equationInput" dir="ltr" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="2x+5" aria-describedby="inputHint equationError">
+            </div>
+            <div id="inputHint" class="field-hint">مانند <b dir="ltr">2x+5</b> یا <b dir="ltr">x^3-2x+1</b>؛ توان را با ^ بنویس.</div>
+            <p id="equationError" class="field-error" aria-live="polite"></p>
+            <div class="form-actions">
+              <button type="submit" id="submitEquation" class="btn btn-primary"><span aria-hidden="true">＋</span><span id="submitText">افزودن به نمودار</span></button>
+              <button type="button" id="cancelEditButton" class="btn btn-soft" hidden>انصراف</button>
+            </div>
+          </form>
+          <div class="examples-head">چند نمونهٔ آماده</div>
+          <div class="examples" aria-label="نمونه توابع">
+            <button type="button" class="example-chip" data-example="2x+5" dir="ltr">2x+5</button>
+            <button type="button" class="example-chip" data-example="x^2-4x+3" dir="ltr">x²−4x+3</button>
+            <button type="button" class="example-chip" data-example="0.3x^3-2x" dir="ltr">0.3x³−2x</button>
+            <button type="button" class="example-chip" data-example="-0.5x^4+2x^2-1" dir="ltr">−0.5x⁴+2x²−1</button>
+            <button type="button" class="example-chip" data-example="0.1x^5-x^3+2x" dir="ltr">0.1x⁵−x³+2x</button>
+          </div>
+        </section>
+
+        <section class="function-panel" aria-labelledby="functionTitle">
+          <div class="function-panel-head">
+            <div><span class="section-eyebrow">مدیریت و کنترل</span><h2 id="functionTitle">توابع من <span class="count-tag" id="functionCount">۱</span></h2></div>
+            <button type="button" class="text-action" id="clearAllButton" title="حذف همهٔ توابع">پاک کردن همه</button>
+          </div>
+          <p class="panel-description">برای تغییر نمودار، ضریب‌ها را با اهرم جابه‌جا کن یا مقدار دقیق وارد کن.</p>
+          <div id="functionList" class="function-list" aria-live="off"></div>
+          <p id="emptyMessage" class="empty-message" hidden>هنوز تابعی اضافه نکرده‌ای. یک عبارت در کادر بالا وارد کن.</p>
+        </section>
+      </aside>
+
+      <section class="visual-column" aria-label="نمودار تعاملی">
+        <div class="graph-panel panel">
+          <div class="graph-topbar">
+            <div class="graph-title"><div class="section-eyebrow">صفحهٔ مختصات</div><h2>نمودار زنده <span class="live-dot" aria-hidden="true"></span></h2></div>
+            <div class="chart-actions" role="group" aria-label="کنترل نمایش نمودار">
+              <button type="button" class="icon-button" id="zoomInButton" aria-label="بزرگ‌نمایی" title="بزرگ‌نمایی">+</button>
+              <button type="button" class="icon-button" id="zoomOutButton" aria-label="کوچک‌نمایی" title="کوچک‌نمایی">−</button>
+              <button type="button" class="btn btn-light btn-fit" id="fitButton" title="نمایش تمام منحنی‌ها در محدودهٔ مناسب">⊡ <span>برازش</span></button>
+              <button type="button" class="btn btn-light btn-export" id="exportButton" title="خروجی PNG از نمودار">↧ <span>PNG</span></button>
+            </div>
+          </div>
+          <div class="graph-stage" id="graphStage">
+            <canvas id="graphCanvas" aria-label="نمودار توابع؛ برای جابه‌جایی بکشید و برای زوم از چرخ ماوس یا دو انگشت استفاده کنید" role="img"></canvas>
+            <div class="graph-corner-label">y <span>↑</span></div>
+            <div class="graph-coordinates" id="graphCoordinates" aria-live="off"><span>نشانگر</span><b dir="ltr">x: — &nbsp; y: —</b></div>
+            <div class="graph-hint" id="graphHint">برای جابه‌جایی بکشید · برای زوم اسکرول کنید</div>
+          </div>
+          <div class="graph-footer">
+            <div class="legend" id="graphLegend" aria-label="راهنمای رنگ نمودارها"></div>
+            <span class="scale-info" id="scaleInfo" dir="ltr"></span>
+          </div>
+        </div>
+        <div class="bottom-notes">
+          <div class="tip"><span class="tip-icon" aria-hidden="true">✦</span><span>ضریب <b>a</b> درجهٔ بالاترین جمله را کنترل می‌کند؛ ضریب آخر مقدار ثابت است.</span></div>
+          <div class="saved-indicator" id="saveIndicator" aria-live="polite">◉ تغییرات به‌صورت خودکار ذخیره می‌شوند</div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer"><span>ساخته‌شده برای یادگیری و کشف رفتار توابع</span><span>کاملاً آفلاین پس از اولین بارگذاری</span></footer>
+  </div>
+  <dialog id="clearDialog" class="confirm-dialog">
+    <form method="dialog">
+      <h2>همهٔ توابع حذف شوند؟</h2>
+      <p>این کار نمودارها و تنظیمات ضرایبشان را پاک می‌کند.</p>
+      <div class="dialog-actions"><button value="cancel" class="btn btn-soft">انصراف</button><button value="confirm" class="btn btn-danger">بله، پاک کن</button></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
+</body>
+</html>
