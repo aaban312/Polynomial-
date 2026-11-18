@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "کارگاه نمودار — توابع کنکور",
+  "short_name": "کارگاه نمودار",
+  "description": "ابزار تعاملی رسم توابع و نامعادلات، کنترل ضرایب، حالت تاریک و ذخیره محلی؛ آفلاین و قابل نصب",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "fa",
+  "dir": "rtl",
+  "theme_color": "#0f766e",
+  "background_color": "#f3f7f9",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {"src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

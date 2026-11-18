@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="description" content="آزمایشگاه نمودار کنکور؛ توابع قدر مطلقی، رادیکالی، جزء صحیح، گویا، مثلثاتی و نامعادله با اهرم‌های تعاملی. قابل استفاده آفلاین.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="کارگاه نمودار">
+  <link rel="manifest" href="./manifest-v2.webmanifest">
+  <link rel="icon" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles-v2.css">
+  <title>کارگاه نمودار | آزمایشگاه توابع کنکور</title>
+</head>
+<body>
+<div class="app-shell">
+ <header class="topbar">
+   <div class="brand"><div class="brand-logo" aria-hidden="true">⌁</div><div><h1>کارگاه نمودار <span class="version">۲.۰</span></h1><p>آزمایشگاه تعاملی توابع کنکور</p></div></div>
+   <div class="top-actions">
+     <span class="network" id="network" title="برنامه حتی بدون اینترنت کار می‌کند"><span class="network-dot"></span><span class="network-label">آفلاین آماده</span></span>
+     <button class="top-button" id="themeButton" type="button" title="تغییر حالت روشن و تاریک" aria-label="تغییر تم">☾ <span class="top-label" id="themeLabel">تاریک</span></button>
+     <button class="top-button save-quick" id="quickSaveButton" type="button" title="ذخیرهٔ پروژه">▣ <span class="top-label">ذخیره</span></button>
+     <button class="top-button install" id="installButton" type="button" hidden>⇩ <span class="top-label">نصب</span></button>
+   </div>
+ </header>
+ <main class="workspace">
+   <section class="chart-panel" aria-label="نمودار زنده">
+     <div class="chart-bar">
+       <div class="chart-heading"><span class="pulse"></span><b>نمودار زنده</b><small id="visibleCount">۲ تابع</small></div>
+       <div class="chart-buttons">
+         <button type="button" class="chart-btn" id="zoomInButton" title="بزرگ‌نمایی" aria-label="بزرگ‌نمایی">＋</button>
+         <button type="button" class="chart-btn" id="zoomOutButton" title="کوچک‌نمایی" aria-label="کوچک‌نمایی">−</button>
+         <button type="button" class="chart-btn" id="fitButton" title="برازش نمودار" aria-label="برازش نمودار">⊡</button>
+         <button type="button" class="chart-btn" id="exportButton" title="دریافت نمودار PNG" aria-label="دریافت PNG">⇩ <span class="desktop-label">PNG</span></button>
+       </div>
+     </div>
+     <div class="graph-stage" id="graphStage"><canvas id="graphCanvas" role="img" aria-label="نمودار مختصات قابل حرکت با انگشت و قابل زوم با دو انگشت"></canvas><div class="cursor-label" id="cursorLabel" dir="ltr">x: — &nbsp; y: —</div><div class="axis-tag">y ↑</div></div>
+     <div class="chart-foot"><div class="legend" id="legend"></div><small id="scaleInfo" dir="ltr"></small></div>
+   </section>
+   <aside class="control-panel" aria-label="اهرم‌ها و مدیریت توابع">
+     <nav class="tabs" role="tablist" aria-label="بخش‌های برنامه">
+       <button type="button" class="tab active" role="tab" id="tab-controls" data-tab="controls" aria-selected="true" aria-controls="pane-controls">☷ <span>اهرم‌ها</span></button>
+       <button type="button" class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="false" aria-controls="pane-create">＋ <span>تابع جدید</span></button>
+       <button type="button" class="tab" role="tab" id="tab-saves" data-tab="saves" aria-selected="false" aria-controls="pane-saves">▣ <span>پروژه‌های من</span></button>
+     </nav>
+     <section class="pane active" id="pane-controls" role="tabpanel" aria-labelledby="tab-controls">
+       <div class="pane-intro"><div><h2>تنظیم زندهٔ ضرایب</h2><p>با حرکت اهرم‌ها، نمودار بالا بلافاصله تغییر می‌کند.</p></div><button type="button" class="small-btn" id="newFromControls">+ جدید</button></div>
+       <div class="function-pills" id="functionPills" aria-label="انتخاب تابع"></div>
+       <div id="activeFunction" class="active-function"></div>
+       <p class="no-functions" id="emptyFunctions" hidden>هنوز نموداری ندارید. از «تابع جدید» استفاده کنید.</p>
+       <div class="control-footer"><button class="text-btn danger-text" type="button" id="clearAllButton">حذف همهٔ نمودارها</button><span id="autoSavedText">● ذخیرهٔ خودکار فعال است</span></div>
+     </section>
+     <section class="pane" id="pane-create" role="tabpanel" aria-labelledby="tab-create" hidden>
+       <div class="pane-intro"><div><h2 id="formTitle">افزودن تابع یا نامعادله</h2><p>از حروف انگلیسی x، a، b و ... استفاده کنید.</p></div></div>
+       <form id="equationForm" novalidate>
+         <label for="equationInput" class="input-label">عبارت ریاضی</label>
+         <div class="input-wrap"><span>f(x)</span><input id="equationInput" type="text" dir="ltr" placeholder="abs(2x-3)+1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="equationError"></div>
+         <p class="input-error" id="equationError" role="alert"></p>
+         <div class="form-actions"><button type="submit" class="primary-btn" id="submitEquation">＋ افزودن به نمودار</button><button type="button" class="small-btn" id="cancelEdit" hidden>انصراف</button></div>
+       </form>
+       <div class="examples-title">نمونه‌های آمادهٔ کنکوری <span>برای استفاده لمس کن</span></div>
+       <div class="example-groups">
+         <div class="examples-section"><b>چندجمله‌ای</b><div class="examples"><button data-example="2x+5">2x+5</button><button data-example="x^2-4x+3">x²−4x+3</button><button data-example="0.1x^5-x^3+2x">x⁵</button></div></div>
+         <div class="examples-section"><b>قدرمطلق و رادیکال</b><div class="examples"><button data-example="a*abs(x-b)+c">a|x-b|+c</button><button data-example="a*sqrt(x-b)+c">a√(x-b)+c</button></div></div>
+         <div class="examples-section"><b>جزء صحیح و گویا</b><div class="examples"><button data-example="a*floor(x-b)+c">a⌊x-b⌋+c</button><button data-example="a/(x-b)+c">a/(x-b)+c</button><button data-example="frac(x)">frac(x)</button></div></div>
+         <div class="examples-section"><b>نمایی، لگاریتمی و مثلثاتی</b><div class="examples"><button data-example="a*exp(b*x)+c">a e^(bx)+c</button><button data-example="a*ln(x-b)+c">a ln(x-b)+c</button><button data-example="a*sin(b*x)+c">a sin(bx)+c</button></div></div>
+         <div class="examples-section"><b>نامعادله و چندضابطه‌ای</b><div class="examples"><button data-example="x^2-4<0">x²−4&lt;0</button><button data-example="y<=abs(x)">y≤|x|</button><button data-example="if(x<0,-x,x)">if(x&lt;0,-x,x)</button><button data-example="abs(x-2)=3">|x-2|=3</button></div></div>
+       </div>
+       <details class="help-box"><summary>راهنمای نگارش توابع و نامعادلات</summary><p><b>عملگرها:</b> <code>+ - * / ^</code> و پرانتز. ضرب ضمنی مثل <code>2x</code> مجاز است.</p><p><b>توابع:</b> <code>abs, sqrt, floor, ceil, frac, sign, sin, cos, tan, cot, ln, log, exp, root, cbrt, min, max</code> و <code>if(شرط, عبارت۱, عبارت۲)</code>.</p><p><b>پارامترهای اهرمی:</b> <code>a,b,c,d,h,k,m,n</code>، مثال: <code>a*abs(x-b)+c</code>؛ اعداد معمولی عبارت نیز اهرم می‌گیرند (جز توان‌ها).</p><p><b>نامعادله:</b> <code>x^2-4<0</code> برای ناحیهٔ x یا <code>y>=x^2</code> برای ناحیهٔ صفحه. معادلهٔ <code>abs(x-2)=3</code> ریشه‌های تقریبی را روی محور x مشخص می‌کند.</p><p>زاویه‌های مثلثاتی بر حسب <b>رادیان</b> هستند. ریشه‌ها و مرزهای نامعادله به شکل عددی و تقریبی به دست می‌آیند.</p></details>
+     </section>
+     <section class="pane" id="pane-saves" role="tabpanel" aria-labelledby="tab-saves" hidden>
+       <div class="pane-intro"><div><h2>پروژه‌های ذخیره‌شده</h2><p>پروژه‌ها در همین مرورگر و همین دستگاه نگه داشته می‌شوند.</p></div></div>
+       <label class="input-label" for="saveName">نام پروژه</label><div class="save-row"><input type="text" id="saveName" maxlength="70" placeholder="مثلاً تمرین قدرمطلق و سهمی"><button class="primary-btn" id="saveProjectButton" type="button">ذخیره</button></div>
+       <div class="save-actions"><button id="exportJsonButton" class="small-btn" type="button">↓ پشتیبان JSON</button><label class="small-btn file-picker" for="importJsonInput">↑ بازیابی JSON<input type="file" id="importJsonInput" accept="application/json,.json" hidden></label></div>
+       <div id="savedProjects" class="saved-projects"></div><p class="storage-note">توجه: پاک‌کردن داده‌های مرورگر می‌تواند پروژه‌های محلی را حذف کند. برای نگهداری دائمی فایل JSON بگیر.</p>
+     </section>
+   </aside>
+ </main>
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+ <dialog id="confirmDialog"><div class="dialog-inner"><h2 id="confirmTitle">تأیید</h2><p id="confirmText"></p><div class="dialog-actions"><button class="small-btn" id="cancelConfirm" type="button">انصراف</button><button class="danger-btn" id="acceptConfirm" type="button">تأیید</button></div></div></dialog>
+</div>
+<script src="./app-v2.js" defer></script>
+</body>
+</html>
